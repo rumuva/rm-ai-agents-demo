@@ -1,0 +1,13 @@
+const homeExamples={Academia:"Responder preguntas sobre horarios, cursos y cómo solicitar información.",Comercio:"Informar sobre productos, horarios y condiciones de devolución.",Restaurante:"Explicar el horario, la carta y cómo solicitar una reserva sin confirmarla.",Inmobiliaria:"Informar sobre servicios y cómo solicitar una visita.",Servicios:"Explicar los servicios, horarios y cómo pedir un presupuesto.",Otro:"Responder preguntas frecuentes y orientar a los clientes."};
+let homeStep=1;
+function showHomeStep(step){
+  homeStep=step;
+  document.querySelectorAll("[data-home-step]").forEach(panel=>{panel.hidden=Number(panel.dataset.homeStep)!==step;});
+  document.getElementById("home-progress").value=step;
+  document.getElementById("home-progress-text").textContent=["","Paso 1 de 3: tu negocio","Paso 2 de 3: su tarea","Paso 3 de 3: revisa y prepara"][step];
+  if(step===3){const review=document.getElementById("home-review");review.replaceChildren();for(const line of ["Negocio: "+document.getElementById("business").value.trim(),"Sector: "+document.getElementById("sector").value,"Tarea: "+document.getElementById("goal").value.trim()]){const p=document.createElement("p");p.textContent=line;review.append(p);}}
+}
+document.querySelectorAll(".home-next").forEach(button=>button.addEventListener("click",()=>{const next=Number(button.dataset.next);if(next===2&&!document.getElementById("business").reportValidity())return;if(next===3&&!document.getElementById("goal").reportValidity())return;showHomeStep(next);}));
+document.querySelectorAll(".home-back").forEach(button=>button.addEventListener("click",()=>showHomeStep(Number(button.dataset.back))));
+document.getElementById("goal-example").addEventListener("click",()=>{const field=document.getElementById("goal");if(field.value.trim()&&!confirm("¿Quieres sustituir tu texto por el ejemplo?"))return;field.value=homeExamples[document.getElementById("sector").value]||homeExamples.Otro;field.focus();});
+document.getElementById('form').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('business').value.trim(),sector=document.getElementById('sector').value,goal=document.getElementById('goal').value.trim();document.getElementById('result').textContent=`Eres el asistente virtual de ${name}, un negocio del sector ${sector}. Objetivo: ${goal}. Responde en español claro. No inventes precios, horarios, disponibilidad ni certificaciones. Si no tienes información confirmada, deriva a una persona. No solicites DNI, datos bancarios ni información sensible. Una solicitud no equivale a una reserva o matrícula confirmada.`;});
